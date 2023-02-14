@@ -10,27 +10,45 @@ namespace DotnetAPI.Controllers;
 public class AuthController : ControllerBase
 {
     IAuthService _authService;
-    //IMapper _mapper;
 
     public AuthController(IConfiguration config, IAuthService authService)
     {
         _authService = authService;
-        //_mapper = new Mapper(new MapperConfiguration(cfg =>{
-        //    cfg.CreateMap<UserToAddDto, User>();
-        //}));
     }
 
     [HttpPost("Register")]
-    public ActionResult RegisterUser(UserRegisterDto userRegisterDto)
+    public IActionResult RegisterUser(UserRegisterDto userRegisterDto)
     {
-        _authService.RegisterUser(userRegisterDto);
+        var activationKey = _authService.RegisterUser(userRegisterDto);
+        return Ok(activationKey);
+    }
+
+    [HttpPost("Activate/User/{userId}/ActivationKey/{activationKey}")]
+    public IActionResult Activate(int userId, int activationKey)
+    {
+        _authService.Activate(userId, activationKey);
         return Ok();
     }
+
     [HttpPost("login")]
-    public ActionResult Login(UserLoginDto userLoginDto)
+    public IActionResult Login(UserLoginDto userLoginDto)
     {
         string token = _authService.GenerateJwt(userLoginDto);
         return Ok(token);
+    }
+
+    [HttpPost("ResetPassword/{nick}")]
+    public IActionResult ResetPasswordRequest(string nick)
+    {
+        _authService.ResetPasswordRequest(nick);
+        return Ok();
+    }
+
+    [HttpPatch("ResetPassword/User/{userId}/ActivationKey/{activationKey}")]
+    public IActionResult ResetPassword(int userId, int activationKey, PasswordChangeDto userDto)
+    {
+        _authService.ResetPassword(userId, activationKey, userDto);
+        return Ok();
     }
 
 }

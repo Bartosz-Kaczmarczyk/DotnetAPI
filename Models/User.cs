@@ -10,4 +10,6 @@ public class User
     public string? LastName { get; set; }
     public DateTime? DateOfBirth { get; set; }
     public bool IsAdmin { get; set; } = false;
+    public int ActivationKey { get; set; }
+    public bool IsActivated { get; set; }
 }
